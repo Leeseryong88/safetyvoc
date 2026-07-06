@@ -14,13 +14,13 @@ import {
   restoreStaffSelection,
   staffCopy,
   type Language,
-  unique,
   pathForStore,
   sortByBrandOrder,
   sortByDescendingCount,
 } from "@/lib/store-hub-utils";
 
 type StaffStep = "language" | "select" | "type" | "compose" | "complete";
+type PickerField = "brand" | "country" | "city" | "store";
 
 type PhotoDraft = {
   file: File;
@@ -54,6 +54,7 @@ export function StaffExperience({
   const [submittedId, setSubmittedId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasRestoredSelection, setHasRestoredSelection] = useState(false);
+  const [activePicker, setActivePicker] = useState<PickerField | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = staffCopy[language];
 
@@ -79,18 +80,17 @@ export function StaffExperience({
       countryCounts,
     );
   }, [brandScopedStores]);
-  const cities = useMemo(
-    () =>
-      unique(
-        activeStores
-          .filter(
-            (store) =>
-              store.brand === selectedBrand && store.country === selectedCountry,
-          )
-          .map((store) => store.city),
-      ),
-    [activeStores, selectedBrand, selectedCountry],
-  );
+  const cities = useMemo(() => {
+    const cityScopedStores = activeStores.filter(
+      (store) => store.brand === selectedBrand && store.country === selectedCountry,
+    );
+    const cityCounts = buildCountMap(cityScopedStores.map((store) => store.city));
+
+    return sortByDescendingCount(
+      cityScopedStores.map((store) => store.city),
+      cityCounts,
+    );
+  }, [activeStores, selectedBrand, selectedCountry]);
   const availableStores = useMemo(
     () =>
       activeStores.filter(
@@ -118,6 +118,14 @@ export function StaffExperience({
 
     setHasRestoredSelection(true);
   }, [activeStores, hasRestoredSelection, scopeKey]);
+
+  useEffect(() => {
+    if (!hasRestoredSelection || step !== "select" || !selectedStore) {
+      return;
+    }
+
+    setStep("type");
+  }, [hasRestoredSelection, selectedStore, step]);
 
   useEffect(() => {
     if (!hasRestoredSelection) {
@@ -178,9 +186,76 @@ export function StaffExperience({
     setSelectedCountry("");
     setSelectedCity("");
     setSelectedStoreId("");
+    setActivePicker(null);
     clearStaffSelection(scopeKey);
     setStep("select");
   }
+
+  function openPicker(field: PickerField) {
+    setActivePicker(field);
+  }
+
+  function closePicker() {
+    setActivePicker(null);
+  }
+
+  function handleBrandSelect(brand: string) {
+    setSelectedBrand(brand);
+    setSelectedCountry("");
+    setSelectedCity("");
+    setSelectedStoreId("");
+    closePicker();
+    setActivePicker("country");
+  }
+
+  function handleCountrySelect(country: string) {
+    setSelectedCountry(country);
+    setSelectedCity("");
+    setSelectedStoreId("");
+    closePicker();
+    setActivePicker("city");
+  }
+
+  function handleCitySelect(city: string) {
+    setSelectedCity(city);
+    setSelectedStoreId("");
+    closePicker();
+    setActivePicker("store");
+  }
+
+  function handleStoreSelect(storeId: string) {
+    setSelectedStoreId(storeId);
+    closePicker();
+    setStep("type");
+  }
+
+  const pickerConfig = {
+    brand: {
+      title: t.brand,
+      options: availableBrands.map((brand) => ({ value: brand, label: brand })),
+      onSelect: handleBrandSelect,
+    },
+    country: {
+      title: t.country,
+      options: countries.map((country) => ({ value: country, label: country })),
+      onSelect: handleCountrySelect,
+    },
+    city: {
+      title: t.city,
+      options: cities.map((city) => ({ value: city, label: city })),
+      onSelect: handleCitySelect,
+    },
+    store: {
+      title: t.store,
+      options: availableStores.map((store) => ({ value: store.id, label: store.name })),
+      onSelect: handleStoreSelect,
+    },
+  } satisfies Record<
+    PickerField,
+    { title: string; options: { value: string; label: string }[]; onSelect: (value: string) => void }
+  >;
+
+  const activePickerConfig = activePicker ? pickerConfig[activePicker] : null;
 
   function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files ?? []);
@@ -312,95 +387,53 @@ export function StaffExperience({
             ) : (
               <>
                 <div className="select-stack">
-                  <label>
+                  <button
+                    className="staff-picker-field"
+                    onClick={() => openPicker("brand")}
+                    type="button"
+                  >
                     <span>{t.brand}</span>
-                    <select
-                      onChange={(event) => {
-                        setSelectedBrand(event.target.value);
-                        setSelectedCountry("");
-                        setSelectedCity("");
-                        setSelectedStoreId("");
-                      }}
-                      value={selectedBrand}
-                    >
-                      <option value="">{t.brand}</option>
-                      {availableBrands.map((brand) => (
-                        <option key={brand} value={brand}>
-                          {brand}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                    <strong className={selectedBrand ? "" : "placeholder"}>
+                      {selectedBrand || t.brand}
+                    </strong>
+                  </button>
 
-                  <label>
+                  <button
+                    className="staff-picker-field"
+                    disabled={!selectedBrand}
+                    onClick={() => openPicker("country")}
+                    type="button"
+                  >
                     <span>{t.country}</span>
-                    <select
-                      disabled={!selectedBrand}
-                      onChange={(event) => {
-                        setSelectedCountry(event.target.value);
-                        setSelectedCity("");
-                        setSelectedStoreId("");
-                      }}
-                      value={selectedCountry}
-                    >
-                      <option value="">{t.country}</option>
-                      {countries.map((country) => (
-                        <option key={country} value={country}>
-                          {country}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                    <strong className={selectedCountry ? "" : "placeholder"}>
+                      {selectedCountry || t.country}
+                    </strong>
+                  </button>
 
-                  <label>
+                  <button
+                    className="staff-picker-field"
+                    disabled={!selectedCountry}
+                    onClick={() => openPicker("city")}
+                    type="button"
+                  >
                     <span>{t.city}</span>
-                    <select
-                      disabled={!selectedCountry}
-                      onChange={(event) => {
-                        setSelectedCity(event.target.value);
-                        setSelectedStoreId("");
-                      }}
-                      value={selectedCity}
-                    >
-                      <option value="">{t.city}</option>
-                      {cities.map((city) => (
-                        <option key={city} value={city}>
-                          {city}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                    <strong className={selectedCity ? "" : "placeholder"}>
+                      {selectedCity || t.city}
+                    </strong>
+                  </button>
 
-                  <label>
+                  <button
+                    className="staff-picker-field"
+                    disabled={!selectedCity}
+                    onClick={() => openPicker("store")}
+                    type="button"
+                  >
                     <span>{t.store}</span>
-                    <select
-                      disabled={!selectedCity}
-                      onChange={(event) => setSelectedStoreId(event.target.value)}
-                      value={selectedStoreId}
-                    >
-                      <option value="">{t.store}</option>
-                      {availableStores.map((store) => (
-                        <option key={store.id} value={store.id}>
-                          {store.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                    <strong className={selectedStore ? "" : "placeholder"}>
+                      {selectedStore?.name || t.store}
+                    </strong>
+                  </button>
                 </div>
-
-                {selectedStore && (
-                  <section className="selection-review">
-                    <span>{t.selectedStore}</span>
-                    <strong>{pathForStore(selectedStore)}</strong>
-                    <button
-                      className="primary-button full"
-                      onClick={() => setStep("type")}
-                      type="button"
-                    >
-                      {t.confirm}
-                    </button>
-                  </section>
-                )}
               </>
             )}
             <button
@@ -558,7 +591,64 @@ export function StaffExperience({
             </button>
           </div>
         )}
+
+        {activePickerConfig && (
+          <StaffPickerModal
+            onClose={closePicker}
+            onSelect={activePickerConfig.onSelect}
+            options={activePickerConfig.options}
+            title={activePickerConfig.title}
+          />
+        )}
       </div>
     </section>
+  );
+}
+
+function StaffPickerModal({
+  onClose,
+  onSelect,
+  options,
+  title,
+}: {
+  onClose: () => void;
+  onSelect: (value: string) => void;
+  options: { value: string; label: string }[];
+  title: string;
+}) {
+  return (
+    <div className="staff-picker-backdrop" onClick={onClose} role="presentation">
+      <div
+        aria-label={title}
+        aria-modal="true"
+        className="staff-picker-sheet"
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+      >
+        <div className="staff-picker-heading">
+          <h2>{title}</h2>
+          <button onClick={onClose} type="button">
+            ×
+          </button>
+        </div>
+        {options.length === 0 ? (
+          <p className="empty-message staff-picker-empty">선택 가능한 항목이 없습니다.</p>
+        ) : (
+          <ul className="staff-picker-list">
+            {options.map((option) => (
+              <li key={option.value}>
+                <button
+                  className="staff-picker-option"
+                  onClick={() => onSelect(option.value)}
+                  type="button"
+                >
+                  {option.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
   );
 }

@@ -379,6 +379,129 @@ select:disabled {
   padding: 0 12px;
 }
 
+.staff-picker-field {
+  display: grid;
+  gap: 7px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.staff-picker-field:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.staff-picker-field > span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.staff-picker-field > strong {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 36px 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--text);
+  font-weight: 700;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 2px),
+    calc(100% - 12px) calc(50% - 2px);
+  background-size:
+    6px 6px,
+    6px 6px;
+  background-repeat: no-repeat;
+}
+
+.staff-picker-field > strong.placeholder {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.staff-picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  align-items: end;
+  padding: 16px;
+  background: rgba(17, 17, 17, 0.32);
+}
+
+.staff-picker-sheet {
+  display: grid;
+  gap: 8px;
+  max-height: min(70vh, 520px);
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.staff-picker-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.staff-picker-heading h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.staff-picker-heading button {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.staff-picker-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+
+.staff-picker-option {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--text);
+  font-weight: 700;
+  text-align: left;
+}
+
+.staff-picker-option:active,
+.staff-picker-option:hover {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+}
+
+.staff-picker-empty {
+  margin: 0;
+  padding: 8px 0 12px;
+}
+
 .report-form textarea,
 .field-control textarea {
   min-height: 130px;
