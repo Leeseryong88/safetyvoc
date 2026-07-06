@@ -48,7 +48,7 @@ export function StaffExperience({
   const [reporterName, setReporterName] = useState("");
   const [reportContent, setReportContent] = useState("");
   const [photoDrafts, setPhotoDrafts] = useState<PhotoDraft[]>([]);
-  const [isCompressingPhoto, setIsCompressingPhoto] = useState(false);
+  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submittedId, setSubmittedId] = useState("");
@@ -274,7 +274,7 @@ export function StaffExperience({
     }
 
     const filesToAdd = files.slice(0, remainingSlots);
-    setIsCompressingPhoto(true);
+    setIsProcessingPhoto(true);
     setPhotoError(null);
 
     void Promise.all(filesToAdd.map((file) => compressImageFile(file)))
@@ -287,13 +287,11 @@ export function StaffExperience({
           })),
         ]);
       })
-      .catch((error) => {
-        setPhotoError(
-          error instanceof Error ? error.message : "사진 압축에 실패했습니다.",
-        );
+      .catch(() => {
+        setPhotoError(t.photoError);
       })
       .finally(() => {
-        setIsCompressingPhoto(false);
+        setIsProcessingPhoto(false);
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
@@ -521,21 +519,19 @@ export function StaffExperience({
               <div className="upload-control">
                 <button
                   className="upload-trigger"
-                  disabled={isCompressingPhoto || photoDrafts.length >= MAX_REPORT_PHOTOS}
+                  disabled={isProcessingPhoto || photoDrafts.length >= MAX_REPORT_PHOTOS}
                   onClick={() => fileInputRef.current?.click()}
                   type="button"
                 >
-                  {isCompressingPhoto ? t.photoCompressing : t.photoChoose}
+                  {t.photoChoose}
                 </button>
                 <p className="upload-status">
-                  {isCompressingPhoto
-                    ? t.photoCompressing
-                    : photoDrafts.length > 0
-                      ? `${photoDrafts.length} / ${MAX_REPORT_PHOTOS}`
-                      : t.photoEmpty}
+                  {photoDrafts.length > 0
+                    ? `${photoDrafts.length} / ${MAX_REPORT_PHOTOS}`
+                    : t.photoEmpty}
                 </p>
                 {photoError && <p className="auth-error">{photoError}</p>}
-                {photoDrafts.length === 0 && !isCompressingPhoto && (
+                {photoDrafts.length === 0 && !isProcessingPhoto && (
                   <em className="upload-hint">{t.photoHint}</em>
                 )}
               </div>
@@ -552,7 +548,7 @@ export function StaffExperience({
                       <button
                         aria-label={`Remove ${photo.file.name}`}
                         className="photo-preview-remove"
-                        disabled={isCompressingPhoto}
+                        disabled={isProcessingPhoto}
                         onClick={() => removePhotoDraft(index)}
                         type="button"
                       >
@@ -572,7 +568,7 @@ export function StaffExperience({
                 !reporterName.trim() ||
                 !reportContent.trim() ||
                 isSubmitting ||
-                isCompressingPhoto
+                isProcessingPhoto
               }
               type="submit"
             >

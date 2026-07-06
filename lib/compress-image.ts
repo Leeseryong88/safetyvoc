@@ -29,7 +29,7 @@ function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality: number) 
     canvas.toBlob(
       (blob) => {
         if (!blob) {
-          reject(new Error("이미지 압축에 실패했습니다."));
+          reject(new Error("IMAGE_PROCESS_FAILED"));
           return;
         }
 
@@ -67,7 +67,7 @@ export async function compressImageFile(file: File, options: CompressOptions = {
 
   const context = canvas.getContext("2d");
   if (!context) {
-    throw new Error("이미지 압축에 실패했습니다.");
+    throw new Error("IMAGE_PROCESS_FAILED");
   }
 
   context.drawImage(image, 0, 0, width, height);

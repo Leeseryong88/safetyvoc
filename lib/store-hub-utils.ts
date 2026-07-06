@@ -36,7 +36,7 @@ export const staffCopy: Record<
     photoChoose: string;
     photoEmpty: string;
     photoHint: string;
-    photoCompressing: string;
+    photoError: string;
     submit: string;
     completeTitle: string;
     completeText: string;
@@ -66,7 +66,7 @@ export const staffCopy: Record<
     photoChoose: "파일 선택",
     photoEmpty: "선택된 파일 없음",
     photoHint: "JPG / PNG · 최대 5장",
-    photoCompressing: "사진 압축 중...",
+    photoError: "사진을 첨부하지 못했습니다.",
     submit: "제출",
     completeTitle: "제보가 접수되었습니다.",
     completeText: "관리자가 접수 내용을 확인합니다.",
@@ -95,7 +95,7 @@ export const staffCopy: Record<
     photoChoose: "选择文件",
     photoEmpty: "未选择文件",
     photoHint: "JPG / PNG · 最多5张",
-    photoCompressing: "正在压缩照片...",
+    photoError: "无法添加照片。",
     submit: "提交",
     completeTitle: "报告已提交。",
     completeText: "管理员将确认提交内容。",
@@ -124,7 +124,7 @@ export const staffCopy: Record<
     photoChoose: "Choose file",
     photoEmpty: "No file selected",
     photoHint: "JPG / PNG · up to 5",
-    photoCompressing: "Compressing photo...",
+    photoError: "Could not attach photo.",
     submit: "Submit",
     completeTitle: "Report submitted.",
     completeText: "The store admin will review the report.",
@@ -153,7 +153,7 @@ export const staffCopy: Record<
     photoChoose: "ファイルを選択",
     photoEmpty: "ファイルが選択されていません",
     photoHint: "JPG / PNG · 最大5枚",
-    photoCompressing: "写真を圧縮中...",
+    photoError: "写真を添付できませんでした。",
     submit: "送信",
     completeTitle: "報告が受け付けられました。",
     completeText: "管理者が内容を確認します。",
