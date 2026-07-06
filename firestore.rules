@@ -1,0 +1,113 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(ownerId) {
+      return isSignedIn() && request.auth.uid == ownerId;
+    }
+
+    function isValidStoreCreate() {
+      return request.resource.data.keys().hasAll(['brand', 'country', 'city', 'name', 'status', 'ownerId'])
+        && request.resource.data.brand is string
+        && request.resource.data.brand.size() > 0
+        && request.resource.data.country is string
+        && request.resource.data.country.size() > 0
+        && request.resource.data.city is string
+        && request.resource.data.city.size() > 0
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.status in ['Active', 'Inactive']
+        && request.resource.data.ownerId == request.auth.uid;
+    }
+
+    function isValidStoreUpdate() {
+      return request.resource.data.keys().hasAll(['brand', 'country', 'city', 'name', 'status', 'ownerId'])
+        && request.resource.data.brand is string
+        && request.resource.data.country is string
+        && request.resource.data.city is string
+        && request.resource.data.name is string
+        && request.resource.data.status in ['Active', 'Inactive']
+        && request.resource.data.ownerId == resource.data.ownerId;
+    }
+
+    function isValidReportData() {
+      return request.resource.data.keys().hasAll([
+          'ownerId',
+          'storeId',
+          'brand',
+          'country',
+          'city',
+          'storeName',
+          'type',
+          'urgency',
+          'status',
+          'content',
+          'reporter',
+        ])
+        && request.resource.data.ownerId is string
+        && request.resource.data.storeId is string
+        && request.resource.data.brand is string
+        && request.resource.data.country is string
+        && request.resource.data.city is string
+        && request.resource.data.storeName is string
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0
+        && request.resource.data.reporter is string
+        && request.resource.data.type in ['Safety', 'General']
+        && request.resource.data.urgency in ['Critical', 'High', 'Normal', 'Low']
+        && request.resource.data.status in ['New', 'In Review', 'Resolved'];
+    }
+
+    function isReportStatusUpdate() {
+      return request.resource.data.diff(resource.data).changedKeys().hasOnly(['status', 'updatedAt'])
+        && request.resource.data.status in ['New', 'In Review', 'Resolved'];
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if false;
+    }
+
+    match /tenantSettings/{ownerId} {
+      allow read: if true;
+      allow create: if isOwner(ownerId)
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.brandOrder is list;
+      allow update: if isOwner(ownerId)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.brandOrder is list;
+      allow delete: if false;
+    }
+
+    match /qrCodes/{token} {
+      allow read: if true;
+      allow create: if isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.label is string;
+      allow update: if isOwner(resource.data.ownerId);
+      allow delete: if isOwner(resource.data.ownerId);
+    }
+
+    match /stores/{storeId} {
+      allow read: if true;
+      allow create: if isValidStoreCreate();
+      allow update: if isOwner(resource.data.ownerId) && isValidStoreUpdate();
+      allow delete: if isOwner(resource.data.ownerId);
+    }
+
+    match /reports/{reportId} {
+      allow read: if isSignedIn()
+        && resource.data.ownerId == request.auth.uid;
+      allow create: if isValidReportData();
+      allow update: if isOwner(resource.data.ownerId)
+        && (isReportStatusUpdate() || isValidReportData());
+      allow delete: if isOwner(resource.data.ownerId);
+    }
+  }
+}
