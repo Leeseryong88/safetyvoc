@@ -1,4 +1,6 @@
 import vinext from "vinext";
+import { nitro } from "nitro/vite";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import hostingConfig from "./.openai/hosting.json";
@@ -8,6 +10,7 @@ const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
 
 const { d1, r2 } = hostingConfig;
+const isVercel = process.env.VERCEL === "1";
 
 const localBindingConfig = {
   main: "./worker/index.ts",
@@ -33,11 +36,16 @@ const localBindingConfig = {
 
 export default defineConfig({
   plugins: [
+    tailwindcss(),
     vinext(),
     sites(),
-    cloudflare({
-      viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
-      config: localBindingConfig,
-    }),
+    ...(isVercel
+      ? [nitro()]
+      : [
+          cloudflare({
+            viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
+            config: localBindingConfig,
+          }),
+        ]),
   ],
 });
