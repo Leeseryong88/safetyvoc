@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import type { ReportInput, ReportType, Store } from "@/lib/types";
+import type { ReportInput, Store } from "@/lib/types";
 import { compressImageFile } from "@/lib/compress-image";
 import {
   buildCountMap,
@@ -19,7 +19,7 @@ import {
   sortByDescendingCount,
 } from "@/lib/store-hub-utils";
 
-type StaffStep = "language" | "select" | "type" | "compose" | "complete";
+type StaffStep = "language" | "select" | "compose" | "complete";
 type PickerField = "brand" | "country" | "city" | "store";
 
 type PhotoDraft = {
@@ -44,7 +44,6 @@ export function StaffExperience({
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedStoreId, setSelectedStoreId] = useState("");
-  const [reportType, setReportType] = useState<ReportType>("Safety");
   const [reporterName, setReporterName] = useState("");
   const [reportContent, setReportContent] = useState("");
   const [photoDrafts, setPhotoDrafts] = useState<PhotoDraft[]>([]);
@@ -124,7 +123,7 @@ export function StaffExperience({
       return;
     }
 
-    setStep("type");
+    setStep("compose");
   }, [hasRestoredSelection, selectedStore, step]);
 
   useEffect(() => {
@@ -226,7 +225,7 @@ export function StaffExperience({
   function handleStoreSelect(storeId: string) {
     setSelectedStoreId(storeId);
     closePicker();
-    setStep("type");
+    setStep("compose");
   }
 
   const pickerConfig = {
@@ -310,8 +309,8 @@ export function StaffExperience({
 
     void onCreateReport(selectedStore, {
       storeId: selectedStore.id,
-      type: reportType,
-      urgency: reportType === "Safety" ? "High" : "Normal",
+      type: "Safety",
+      urgency: "High",
       status: "New",
       reporter: reporterName.trim(),
       photoName:
@@ -450,36 +449,6 @@ export function StaffExperience({
             <strong>{pathForStore(selectedStore)}</strong>
             <button onClick={resetSelection} type="button">
               {t.changeStore}
-            </button>
-          </div>
-        )}
-
-        {step === "type" && (
-          <div className="stack">
-            <div className="section-title">
-              <h2>{t.reportType}</h2>
-            </div>
-            <button
-              className="type-card safety"
-              onClick={() => {
-                setReportType("Safety");
-                setStep("compose");
-              }}
-              type="button"
-            >
-              <strong>{t.safety}</strong>
-              <span>{t.safetyDesc}</span>
-            </button>
-            <button
-              className="type-card"
-              onClick={() => {
-                setReportType("General");
-                setStep("compose");
-              }}
-              type="button"
-            >
-              <strong>{t.general}</strong>
-              <span>{t.generalDesc}</span>
             </button>
           </div>
         )}

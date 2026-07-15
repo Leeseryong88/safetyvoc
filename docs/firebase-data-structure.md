@@ -29,7 +29,7 @@ Each document stores a submitted VOC or safety report:
 - `country`: denormalized country
 - `city`: denormalized city
 - `storeName`: denormalized store name
-- `type`: `Safety` | `General`
+- `type`: `Safety` (신규 제보는 Safety만 허용; 과거 데이터에 `General`이 있을 수 있음)
 - `urgency`: `Critical` | `High` | `Normal` | `Low`
 - `status`: `New` | `In Review` | `Resolved`
 - `content`: report text

@@ -657,7 +657,7 @@ function AdminExperience({
               <SelectControl
                 label="Type"
                 onChange={(value) => setReportFilters((filters) => ({ ...filters, type: value }))}
-                options={["All", "Safety", "General"]}
+                options={["All", "Safety"]}
                 value={reportFilters.type}
               />
               <SelectControl

@@ -23,11 +23,6 @@ export const staffCopy: Record<
     confirm: string;
     selectedStore: string;
     changeStore: string;
-    reportType: string;
-    safety: string;
-    safetyDesc: string;
-    general: string;
-    generalDesc: string;
     content: string;
     contentPlaceholder: string;
     reporter: string;
@@ -53,11 +48,6 @@ export const staffCopy: Record<
     confirm: "선택 완료",
     selectedStore: "선택한 스토어",
     changeStore: "스토어 변경",
-    reportType: "제보 유형을 선택해주세요.",
-    safety: "안전관리 제보",
-    safetyDesc: "긴급 확인이 필요한 안전 이슈",
-    general: "일반 제보",
-    generalDesc: "운영, 시설, 고객 VOC 등",
     content: "내용",
     contentPlaceholder: "상황을 구체적으로 작성해주세요.",
     reporter: "작성자",
@@ -82,11 +72,6 @@ export const staffCopy: Record<
     confirm: "确认选择",
     selectedStore: "已选门店",
     changeStore: "更换门店",
-    reportType: "请选择报告类型。",
-    safety: "安全管理报告",
-    safetyDesc: "需要紧急确认的安全问题",
-    general: "一般报告",
-    generalDesc: "运营、设施、客户反馈等",
     content: "内容",
     contentPlaceholder: "请具体描述情况。",
     reporter: "提交人",
@@ -111,11 +96,6 @@ export const staffCopy: Record<
     confirm: "Confirm store",
     selectedStore: "Selected store",
     changeStore: "Change store",
-    reportType: "Choose report type.",
-    safety: "Safety report",
-    safetyDesc: "Urgent safety issue for review",
-    general: "General report",
-    generalDesc: "Operations, facilities, customer VOC",
     content: "Content",
     contentPlaceholder: "Describe the situation clearly.",
     reporter: "Author",
@@ -140,11 +120,6 @@ export const staffCopy: Record<
     confirm: "選択完了",
     selectedStore: "選択したストア",
     changeStore: "ストア変更",
-    reportType: "報告タイプを選択してください。",
-    safety: "安全管理報告",
-    safetyDesc: "至急確認が必要な安全課題",
-    general: "一般報告",
-    generalDesc: "運営、施設、お客様VOCなど",
     content: "内容",
     contentPlaceholder: "状況を具体的に入力してください。",
     reporter: "作成者",

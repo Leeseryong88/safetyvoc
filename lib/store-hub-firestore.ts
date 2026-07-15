@@ -79,7 +79,7 @@ function mapReport(id: string, data: Record<string, unknown>): ReportItem {
     id,
     ownerId: String(data.ownerId ?? ""),
     storeId: String(data.storeId ?? ""),
-    type: (data.type as ReportItem["type"]) ?? "General",
+    type: (data.type as ReportItem["type"]) ?? "Safety",
     urgency: (data.urgency as ReportItem["urgency"]) ?? "Normal",
     status: (data.status as ReportItem["status"]) ?? "New",
     receivedAt: formatReceivedAt(data.receivedAt ?? data.createdAt),

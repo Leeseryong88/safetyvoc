@@ -57,7 +57,7 @@ service cloud.firestore {
         && request.resource.data.content is string
         && request.resource.data.content.size() > 0
         && request.resource.data.reporter is string
-        && request.resource.data.type in ['Safety', 'General']
+        && request.resource.data.type == 'Safety'
         && request.resource.data.urgency in ['Critical', 'High', 'Normal', 'Low']
         && request.resource.data.status in ['New', 'In Review', 'Resolved'];
     }
