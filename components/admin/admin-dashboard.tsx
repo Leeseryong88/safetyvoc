@@ -968,65 +968,116 @@ function AdminExperience({
       </div>
 
       {selectedReport && (
-        <aside className="detail-drawer" aria-label="Report detail">
-          <button className="drawer-close" onClick={() => setSelectedReportId(null)} type="button">
-            Close
-          </button>
-          <p>{selectedReport.report.id}</p>
-          <h2>{selectedReport.report.type} Report</h2>
-          <div className="detail-meta">
-            <span>{pathForStore(selectedReport.store)}</span>
-            <Badge value={selectedReport.report.urgency} />
-            <Badge value={selectedReport.report.status} />
-          </div>
-          <section>
-            <h3>Content</h3>
-            <p>{selectedReport.report.content}</p>
-          </section>
-          <section>
-            <h3>Photo{selectedReportPhotos.length > 1 ? "s" : ""}</h3>
-            {selectedReportPhotos.length > 0 ? (
-              <div className="report-photo-grid">
-                {selectedReportPhotos.map((url, index) => (
-                  <img
-                    alt={
-                      selectedReport.report.photoName
-                        ? `${selectedReport.report.photoName} (${index + 1})`
-                        : `Report photo ${index + 1}`
-                    }
-                    className="report-photo-image"
-                    key={`${url}-${index}`}
-                    src={url}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="photo-placeholder">
-                {selectedReport.report.photoName ?? "No photo attached"}
-              </div>
-            )}
-          </section>
-          <label className="field-control">
-            <span>Status</span>
-            <select
-              onChange={(event) =>
-                updateReportStatus(selectedReport.report.id, event.target.value as ReportStatus)
-              }
-              value={selectedReport.report.status}
-            >
-              <option value="New">New</option>
-              <option value="In Review">In Review</option>
-              <option value="Resolved">Resolved</option>
-            </select>
-          </label>
-          <button
-            className="danger-button drawer-delete"
-            onClick={() => deleteReport(selectedReport.report.id)}
-            type="button"
+        <div
+          className="modal-backdrop report-detail-backdrop"
+          onClick={() => setSelectedReportId(null)}
+          role="presentation"
+        >
+          <article
+            aria-label="접수 상세"
+            aria-modal="true"
+            className="report-detail-card"
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
           >
-            Delete Report
-          </button>
-        </aside>
+            <div className="report-detail-heading">
+              <div>
+                <p className="report-detail-id">{selectedReport.report.id}</p>
+                <h2>접수 상세</h2>
+              </div>
+              <button
+                className="ghost-button"
+                onClick={() => setSelectedReportId(null)}
+                type="button"
+              >
+                닫기
+              </button>
+            </div>
+
+            <div className="report-detail-meta">
+              <span className="report-detail-store">{pathForStore(selectedReport.store)}</span>
+              <div className="report-detail-badges">
+                <span className="badge">
+                  {selectedReport.report.type === "Safety" ? "안전관리" : selectedReport.report.type}
+                </span>
+                <Badge value={selectedReport.report.urgency} />
+                <Badge value={selectedReport.report.status} />
+              </div>
+              <span className="report-detail-date">{selectedReport.report.receivedAt}</span>
+            </div>
+
+            <section className="report-detail-block">
+              <h3>접수자</h3>
+              <p className="report-detail-reporter">{selectedReport.report.reporter || "-"}</p>
+            </section>
+
+            <section className="report-detail-block">
+              <h3>내용</h3>
+              <p className="report-detail-content">{selectedReport.report.content}</p>
+            </section>
+
+            <section className="report-detail-block">
+              <h3>
+                사진
+                {selectedReportPhotos.length > 0 ? ` (${selectedReportPhotos.length})` : ""}
+              </h3>
+              {selectedReportPhotos.length > 0 ? (
+                <div className="report-detail-photo-grid">
+                  {selectedReportPhotos.map((url, index) => (
+                    <a
+                      className="report-detail-photo-link"
+                      href={url}
+                      key={`${url}-${index}`}
+                      rel="noreferrer"
+                      target="_blank"
+                      title="새 탭에서 크게 보기"
+                    >
+                      <img
+                        alt={
+                          selectedReport.report.photoName
+                            ? `${selectedReport.report.photoName} (${index + 1})`
+                            : `접수 사진 ${index + 1}`
+                        }
+                        className="report-detail-photo"
+                        src={url}
+                      />
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                <div className="photo-placeholder">
+                  {selectedReport.report.photoName ?? "첨부된 사진 없음"}
+                </div>
+              )}
+            </section>
+
+            <div className="report-detail-actions">
+              <label className="field-control">
+                <span>상태</span>
+                <select
+                  onChange={(event) =>
+                    updateReportStatus(
+                      selectedReport.report.id,
+                      event.target.value as ReportStatus,
+                    )
+                  }
+                  value={selectedReport.report.status}
+                >
+                  <option value="New">New</option>
+                  <option value="In Review">In Review</option>
+                  <option value="Resolved">Resolved</option>
+                </select>
+              </label>
+              <button
+                className="danger-button"
+                onClick={() => deleteReport(selectedReport.report.id)}
+                type="button"
+              >
+                삭제
+              </button>
+            </div>
+          </article>
+        </div>
       )}
 
       {isStoreModalOpen && (
