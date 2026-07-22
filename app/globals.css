@@ -437,10 +437,12 @@ select:disabled {
 }
 
 .staff-picker-sheet {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
   max-height: min(70vh, 520px);
   padding: 16px;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: #ffffff;
@@ -449,6 +451,7 @@ select:disabled {
 
 .staff-picker-heading {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -472,11 +475,17 @@ select:disabled {
 
 .staff-picker-list {
   display: grid;
+  flex: 1 1 auto;
   gap: 6px;
+  min-height: 0;
   margin: 0;
   padding: 0;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   list-style: none;
+  touch-action: pan-y;
 }
 
 .staff-picker-option {
