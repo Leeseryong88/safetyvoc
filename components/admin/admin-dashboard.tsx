@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { ChangePasswordForm } from "@/components/admin/change-password-form";
 import { StaffQrSection } from "@/components/admin/staff-qr-section";
 import { logOut } from "@/lib/auth";
 import {
@@ -963,6 +964,8 @@ function AdminExperience({
                 onChange={(checked) => setSettings((value) => ({ ...value, safetyEscalation: checked }))}
               />
             </div>
+
+            <ChangePasswordForm />
           </div>
         )}
       </div>

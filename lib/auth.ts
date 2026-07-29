@@ -1,7 +1,10 @@
 import {
+  EmailAuthProvider,
   onAuthStateChanged,
+  reauthenticateWithCredential,
   signInWithEmailAndPassword,
   signOut,
+  updatePassword,
   type User,
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
@@ -15,6 +18,19 @@ export async function signIn(email: string, password: string) {
 
 export async function logOut() {
   await signOut(getFirebaseAuth());
+}
+
+export async function changePassword(currentPassword: string, newPassword: string) {
+  const auth = getFirebaseAuth();
+  const user = auth.currentUser;
+
+  if (!user?.email) {
+    throw new Error("로그인이 필요합니다.");
+  }
+
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
+  await reauthenticateWithCredential(user, credential);
+  await updatePassword(user, newPassword);
 }
 
 export function subscribeAuth(onUser: (user: User | null) => void) {

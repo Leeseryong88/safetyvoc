@@ -1644,6 +1644,28 @@ td span {
   font-size: 0.92rem;
 }
 
+.auth-success {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ink) 8%, white);
+  color: var(--ink);
+  font-size: 0.92rem;
+}
+
+.password-change-panel {
+  margin-top: 16px;
+  max-width: 420px;
+}
+
+.password-change-form {
+  margin-top: 4px;
+}
+
+.password-change-form .primary-button {
+  justify-self: start;
+}
+
 .auth-note {
   margin: 20px 0 0;
   color: var(--muted);
